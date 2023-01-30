@@ -17,7 +17,7 @@ public class HttpRequest {
 	
 	InputStream in;
 	Map<String, String> headers = Maps.newHashMap();
-	
+	Map<String, String> params = Maps.newHashMap();
 	
 	HttpRequest(InputStream in){
 		BufferedReader br;
@@ -35,14 +35,14 @@ public class HttpRequest {
         	int index = tokens[1].indexOf("?");
         	String queryString = tokens[1].substring(index+1);
         	
-        	System.out.println(queryString);
-        	Map<String, String> params = HttpRequestUtils.parseQueryString(queryString);
+        	params = HttpRequestUtils.parseQueryString(queryString);
         	
-//        	while(!"".equals(line)) {
-//        		line = br.readLine();
-//        		String[] token = line.split(":");
-//        		headers.put(token[0], token[1].trim());
-//        	}
+        	while(!"".equals(line) || line==null) {
+        		line = br.readLine();
+        		if (line == null || line.isEmpty()) break;
+        		String[] token = line.split(":");
+        		headers.put(token[0], token[1].trim());
+        	}
 			
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -62,4 +62,7 @@ public class HttpRequest {
 		return headers.get(key);
 	}
 	
+	public String getParameter(String key) {
+		return params.get(key);
+	}
 }

@@ -16,10 +16,10 @@ public class HttpRequestTest {
 		InputStream in = new FileInputStream(new File(testDirectory + "Http_GET.txt"));
 		
 		HttpRequest request = new HttpRequest(in);
-		
+
 		assertEquals("GET", request.getMethod());
 		assertEquals("/user/create", request.getPath());
 		assertEquals("keep-alive", request.getHeader("Connection"));
-		
+		assertEquals("1234", request.getParameter("userId"));
 	}
 }
