@@ -103,7 +103,7 @@ public class RequestHandler extends Thread {
         			responseResource(out, "/user/login.html");
         			return;
         		}
-        		Collection<User> users = new DataBase().findAll();
+        		Collection<User> users = DataBase.findAll();
         		StringBuilder sb = new StringBuilder();
         		sb.append("<table border='1'>");
         		for (User user: users) {
