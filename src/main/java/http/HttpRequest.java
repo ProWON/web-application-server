@@ -16,12 +16,13 @@ import util.IOUtils;
 public class HttpRequest {
 	private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 	
-	private String method;
+	private HttpMethod method;
 	private String path;
 	private Map<String, String> headers = Maps.newHashMap();
 	private Map<String, String> params = Maps.newHashMap();
+	private Map<String, String> cookies = Maps.newHashMap();
 	
-	HttpRequest(InputStream in){
+	public HttpRequest(InputStream in){
 		BufferedReader br;
 		try {
 			br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
@@ -32,16 +33,20 @@ public class HttpRequest {
 			processRequestLine(line);
         	
 			line = br.readLine();
-        	while(!"".equals(line) || line==null) {
+        	while(!"".equals(line)) {
         		log.debug("header : {}", line);
-        		line = br.readLine();
         		String[] token = line.split(":");
         		headers.put(token[0], token[1].trim());
         		line = br.readLine();
         	}
         	
-        	if ("POST".equals(method)) {
+        	if(headers.containsKey("Cookie")) {
+        		processCookie(headers.get("Cookie"));
+        	}
+
+        	if (method == HttpMethod.POST) {
         		String body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
+
         		params = HttpRequestUtils.parseQueryString(body);
         	}
 			
@@ -51,12 +56,16 @@ public class HttpRequest {
     	
 	}
 	
+	private void processCookie(String cookieValue) {
+		cookies = HttpRequestUtils.parseCookies(cookieValue);
+	}
+	
 	private void processRequestLine(String requestLine) {
 		log.debug("request line : ", requestLine);
 		String[] tokens = requestLine.split(" ");
-		method = tokens[0];
-		
-		if ("POST".equals(method)) {
+		method = HttpMethod.valueOf(tokens[0]);
+
+		if (method == HttpMethod.POST) {
 			path = tokens[1];
 			return;
 		}
@@ -70,7 +79,7 @@ public class HttpRequest {
 		}
 	}
 	
-	public String getMethod() {
+	public HttpMethod getMethod() {
 		return method;
 	}
 	
@@ -84,6 +93,10 @@ public class HttpRequest {
 	
 	public String getParameter(String key) {
 		return params.get(key);
+	}
+	
+	public Map<String, String> getCookies() {
+		return cookies;
 	}
 	
 }

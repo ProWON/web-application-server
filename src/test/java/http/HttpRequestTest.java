@@ -17,9 +17,23 @@ public class HttpRequestTest {
 		
 		HttpRequest request = new HttpRequest(in);
 
-		assertEquals("GET", request.getMethod());
+		assertEquals(HttpMethod.GET, request.getMethod());
 		assertEquals("/user/create", request.getPath());
 		assertEquals("keep-alive", request.getHeader("Connection"));
 		assertEquals("1234", request.getParameter("userId"));
+	}
+	
+	@Test
+	public void request_POST() throws Exception {
+		InputStream in = new FileInputStream(new File(testDirectory + "Http_POST.txt"));
+		
+		HttpRequest request = new HttpRequest(in);
+
+		assertEquals(HttpMethod.POST, request.getMethod());
+		assertEquals("/user/create", request.getPath());
+		assertEquals("keep-alive", request.getHeader("Connection"));
+		assertEquals("47", request.getHeader("Content-Length"));
+		assertEquals("1234", request.getParameter("userId"));
+		assertEquals("1234", request.getParameter("password"));
 	}
 }

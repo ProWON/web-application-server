@@ -28,6 +28,11 @@ public class User {
     public String getEmail() {
         return email;
     }
+    
+    public boolean login(String password) {
+    	if(this.password.equals(password)) return true;
+    	return false;
+    }
 
     @Override
     public String toString() {
